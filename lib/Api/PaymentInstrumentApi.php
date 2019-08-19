@@ -93,13 +93,16 @@ class PaymentInstrumentApi
      * Create a Payment Instrument
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param \CyberSource\Model\CreatePaymentInstrumentRequest $createPaymentInstrumentRequest Specify the customer&#39;s payment details for card or bank account. (required)
+     * @param string $clientApplication Client application name (optional)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of \CyberSource\Model\TmsV1InstrumentIdentifiersPaymentInstrumentsGet200ResponseEmbeddedPaymentInstruments, HTTP status code, HTTP response headers (array of strings)
      */
-    public function createPaymentInstrument($profileId, $createPaymentInstrumentRequest)
+    public function createPaymentInstrument($profileId, $vCMerchantId, $vCCorrelationId, $createPaymentInstrumentRequest, $clientApplication = null)
     {
-        list($response, $statusCode, $httpHeader) = $this->createPaymentInstrumentWithHttpInfo($profileId, $createPaymentInstrumentRequest);
+        list($response, $statusCode, $httpHeader) = $this->createPaymentInstrumentWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $createPaymentInstrumentRequest, $clientApplication);
         return [$response, $statusCode, $httpHeader];
     }
 
@@ -109,11 +112,14 @@ class PaymentInstrumentApi
      * Create a Payment Instrument
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param \CyberSource\Model\CreatePaymentInstrumentRequest $createPaymentInstrumentRequest Specify the customer&#39;s payment details for card or bank account. (required)
+     * @param string $clientApplication Client application name (optional)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of \CyberSource\Model\TmsV1InstrumentIdentifiersPaymentInstrumentsGet200ResponseEmbeddedPaymentInstruments, HTTP status code, HTTP response headers (array of strings)
      */
-    public function createPaymentInstrumentWithHttpInfo($profileId, $createPaymentInstrumentRequest)
+    public function createPaymentInstrumentWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $createPaymentInstrumentRequest, $clientApplication = null)
     {
         // verify the required parameter 'profileId' is set
         if ($profileId === null) {
@@ -126,10 +132,42 @@ class PaymentInstrumentApi
             throw new \InvalidArgumentException('invalid length for "$profileId" when calling PaymentInstrumentApi.createPaymentInstrument, must be bigger than or equal to 36.');
         }
 
+        // verify the required parameter 'vCMerchantId' is set
+        if ($vCMerchantId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCMerchantId when calling createPaymentInstrument');
+        }
+        if ((strlen($vCMerchantId) > 32)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling PaymentInstrumentApi.createPaymentInstrument, must be smaller than or equal to 32.');
+        }
+        if ((strlen($vCMerchantId) < 5)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling PaymentInstrumentApi.createPaymentInstrument, must be bigger than or equal to 5.');
+        }
+
+        // verify the required parameter 'vCCorrelationId' is set
+        if ($vCCorrelationId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCCorrelationId when calling createPaymentInstrument');
+        }
+        if ((strlen($vCCorrelationId) > 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling PaymentInstrumentApi.createPaymentInstrument, must be smaller than or equal to 36.');
+        }
+        if ((strlen($vCCorrelationId) < 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling PaymentInstrumentApi.createPaymentInstrument, must be bigger than or equal to 36.');
+        }
+
         // verify the required parameter 'createPaymentInstrumentRequest' is set
         if ($createPaymentInstrumentRequest === null) {
             throw new \InvalidArgumentException('Missing the required parameter $createPaymentInstrumentRequest when calling createPaymentInstrument');
         }
+        if (!is_null($clientApplication) && (strlen($clientApplication) > 30)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling PaymentInstrumentApi.createPaymentInstrument, must be smaller than or equal to 30.');
+        }
+        if (!is_null($clientApplication) && (strlen($clientApplication) < 3)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling PaymentInstrumentApi.createPaymentInstrument, must be bigger than or equal to 3.');
+        }
+        if (!is_null($clientApplication) && !preg_match("/^[a-zA-Z0-9\\\\-_]{3,30}|$/", $clientApplication)) {
+            throw new \InvalidArgumentException("invalid value for \"clientApplication\" when calling PaymentInstrumentApi.createPaymentInstrument, must conform to the pattern /^[a-zA-Z0-9\\\\-_]{3,30}|$/.");
+        }
+
         // parse inputs
         $resourcePath = "/tms/v1/paymentinstruments";
         $httpBody = '';
@@ -145,6 +183,18 @@ class PaymentInstrumentApi
         // header params
         if ($profileId !== null) {
             $headerParams['profile-id'] = $this->apiClient->getSerializer()->toHeaderValue($profileId);
+        }
+        // header params
+        if ($vCMerchantId !== null) {
+            $headerParams['v-c-merchant-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCMerchantId);
+        }
+        // header params
+        if ($vCCorrelationId !== null) {
+            $headerParams['v-c-correlation-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCCorrelationId);
+        }
+        // header params
+        if ($clientApplication !== null) {
+            $headerParams['Client-Application'] = $this->apiClient->getSerializer()->toHeaderValue($clientApplication);
         }
         // body params
         $_tempBody = null;
@@ -205,13 +255,16 @@ class PaymentInstrumentApi
      * Delete a Payment Instrument
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param string $tokenId The TokenId of a Payment Instrument. (required)
+     * @param string $clientApplication Client application name (optional)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of void, HTTP status code, HTTP response headers (array of strings)
      */
-    public function deletePaymentInstrument($profileId, $tokenId)
+    public function deletePaymentInstrument($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $clientApplication = null)
     {
-        list($response, $statusCode, $httpHeader) = $this->deletePaymentInstrumentWithHttpInfo($profileId, $tokenId);
+        list($response, $statusCode, $httpHeader) = $this->deletePaymentInstrumentWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $clientApplication);
         return [$response, $statusCode, $httpHeader];
     }
 
@@ -221,11 +274,14 @@ class PaymentInstrumentApi
      * Delete a Payment Instrument
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param string $tokenId The TokenId of a Payment Instrument. (required)
+     * @param string $clientApplication Client application name (optional)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of null, HTTP status code, HTTP response headers (array of strings)
      */
-    public function deletePaymentInstrumentWithHttpInfo($profileId, $tokenId)
+    public function deletePaymentInstrumentWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $clientApplication = null)
     {
         // verify the required parameter 'profileId' is set
         if ($profileId === null) {
@@ -238,6 +294,28 @@ class PaymentInstrumentApi
             throw new \InvalidArgumentException('invalid length for "$profileId" when calling PaymentInstrumentApi.deletePaymentInstrument, must be bigger than or equal to 36.');
         }
 
+        // verify the required parameter 'vCMerchantId' is set
+        if ($vCMerchantId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCMerchantId when calling deletePaymentInstrument');
+        }
+        if ((strlen($vCMerchantId) > 32)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling PaymentInstrumentApi.deletePaymentInstrument, must be smaller than or equal to 32.');
+        }
+        if ((strlen($vCMerchantId) < 5)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling PaymentInstrumentApi.deletePaymentInstrument, must be bigger than or equal to 5.');
+        }
+
+        // verify the required parameter 'vCCorrelationId' is set
+        if ($vCCorrelationId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCCorrelationId when calling deletePaymentInstrument');
+        }
+        if ((strlen($vCCorrelationId) > 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling PaymentInstrumentApi.deletePaymentInstrument, must be smaller than or equal to 36.');
+        }
+        if ((strlen($vCCorrelationId) < 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling PaymentInstrumentApi.deletePaymentInstrument, must be bigger than or equal to 36.');
+        }
+
         // verify the required parameter 'tokenId' is set
         if ($tokenId === null) {
             throw new \InvalidArgumentException('Missing the required parameter $tokenId when calling deletePaymentInstrument');
@@ -247,6 +325,16 @@ class PaymentInstrumentApi
         }
         if ((strlen($tokenId) < 16)) {
             throw new \InvalidArgumentException('invalid length for "$tokenId" when calling PaymentInstrumentApi.deletePaymentInstrument, must be bigger than or equal to 16.');
+        }
+
+        if (!is_null($clientApplication) && (strlen($clientApplication) > 30)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling PaymentInstrumentApi.deletePaymentInstrument, must be smaller than or equal to 30.');
+        }
+        if (!is_null($clientApplication) && (strlen($clientApplication) < 3)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling PaymentInstrumentApi.deletePaymentInstrument, must be bigger than or equal to 3.');
+        }
+        if (!is_null($clientApplication) && !preg_match("/^[a-zA-Z0-9\\\\-_]{3,30}|$/", $clientApplication)) {
+            throw new \InvalidArgumentException("invalid value for \"clientApplication\" when calling PaymentInstrumentApi.deletePaymentInstrument, must conform to the pattern /^[a-zA-Z0-9\\\\-_]{3,30}|$/.");
         }
 
         // parse inputs
@@ -264,6 +352,18 @@ class PaymentInstrumentApi
         // header params
         if ($profileId !== null) {
             $headerParams['profile-id'] = $this->apiClient->getSerializer()->toHeaderValue($profileId);
+        }
+        // header params
+        if ($vCMerchantId !== null) {
+            $headerParams['v-c-merchant-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCMerchantId);
+        }
+        // header params
+        if ($vCCorrelationId !== null) {
+            $headerParams['v-c-correlation-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCCorrelationId);
+        }
+        // header params
+        if ($clientApplication !== null) {
+            $headerParams['Client-Application'] = $this->apiClient->getSerializer()->toHeaderValue($clientApplication);
         }
         // path params
         if ($tokenId !== null) {
@@ -327,13 +427,16 @@ class PaymentInstrumentApi
      * Retrieve a Payment Instrument
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param string $tokenId The TokenId of a Payment Instrument. (required)
+     * @param string $clientApplication Client application name (optional)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of \CyberSource\Model\TmsV1InstrumentIdentifiersPaymentInstrumentsGet200ResponseEmbeddedPaymentInstruments, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getPaymentInstrument($profileId, $tokenId)
+    public function getPaymentInstrument($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $clientApplication = null)
     {
-        list($response, $statusCode, $httpHeader) = $this->getPaymentInstrumentWithHttpInfo($profileId, $tokenId);
+        list($response, $statusCode, $httpHeader) = $this->getPaymentInstrumentWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $clientApplication);
         return [$response, $statusCode, $httpHeader];
     }
 
@@ -343,11 +446,14 @@ class PaymentInstrumentApi
      * Retrieve a Payment Instrument
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param string $tokenId The TokenId of a Payment Instrument. (required)
+     * @param string $clientApplication Client application name (optional)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of \CyberSource\Model\TmsV1InstrumentIdentifiersPaymentInstrumentsGet200ResponseEmbeddedPaymentInstruments, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getPaymentInstrumentWithHttpInfo($profileId, $tokenId)
+    public function getPaymentInstrumentWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $clientApplication = null)
     {
         // verify the required parameter 'profileId' is set
         if ($profileId === null) {
@@ -360,6 +466,28 @@ class PaymentInstrumentApi
             throw new \InvalidArgumentException('invalid length for "$profileId" when calling PaymentInstrumentApi.getPaymentInstrument, must be bigger than or equal to 36.');
         }
 
+        // verify the required parameter 'vCMerchantId' is set
+        if ($vCMerchantId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCMerchantId when calling getPaymentInstrument');
+        }
+        if ((strlen($vCMerchantId) > 32)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling PaymentInstrumentApi.getPaymentInstrument, must be smaller than or equal to 32.');
+        }
+        if ((strlen($vCMerchantId) < 5)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling PaymentInstrumentApi.getPaymentInstrument, must be bigger than or equal to 5.');
+        }
+
+        // verify the required parameter 'vCCorrelationId' is set
+        if ($vCCorrelationId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCCorrelationId when calling getPaymentInstrument');
+        }
+        if ((strlen($vCCorrelationId) > 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling PaymentInstrumentApi.getPaymentInstrument, must be smaller than or equal to 36.');
+        }
+        if ((strlen($vCCorrelationId) < 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling PaymentInstrumentApi.getPaymentInstrument, must be bigger than or equal to 36.');
+        }
+
         // verify the required parameter 'tokenId' is set
         if ($tokenId === null) {
             throw new \InvalidArgumentException('Missing the required parameter $tokenId when calling getPaymentInstrument');
@@ -369,6 +497,16 @@ class PaymentInstrumentApi
         }
         if ((strlen($tokenId) < 16)) {
             throw new \InvalidArgumentException('invalid length for "$tokenId" when calling PaymentInstrumentApi.getPaymentInstrument, must be bigger than or equal to 16.');
+        }
+
+        if (!is_null($clientApplication) && (strlen($clientApplication) > 30)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling PaymentInstrumentApi.getPaymentInstrument, must be smaller than or equal to 30.');
+        }
+        if (!is_null($clientApplication) && (strlen($clientApplication) < 3)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling PaymentInstrumentApi.getPaymentInstrument, must be bigger than or equal to 3.');
+        }
+        if (!is_null($clientApplication) && !preg_match("/^[a-zA-Z0-9\\\\-_]{3,30}|$/", $clientApplication)) {
+            throw new \InvalidArgumentException("invalid value for \"clientApplication\" when calling PaymentInstrumentApi.getPaymentInstrument, must conform to the pattern /^[a-zA-Z0-9\\\\-_]{3,30}|$/.");
         }
 
         // parse inputs
@@ -386,6 +524,18 @@ class PaymentInstrumentApi
         // header params
         if ($profileId !== null) {
             $headerParams['profile-id'] = $this->apiClient->getSerializer()->toHeaderValue($profileId);
+        }
+        // header params
+        if ($vCMerchantId !== null) {
+            $headerParams['v-c-merchant-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCMerchantId);
+        }
+        // header params
+        if ($vCCorrelationId !== null) {
+            $headerParams['v-c-correlation-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCCorrelationId);
+        }
+        // header params
+        if ($clientApplication !== null) {
+            $headerParams['Client-Application'] = $this->apiClient->getSerializer()->toHeaderValue($clientApplication);
         }
         // path params
         if ($tokenId !== null) {
@@ -457,14 +607,17 @@ class PaymentInstrumentApi
      * Update a Payment Instrument
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param string $tokenId The TokenId of a Payment Instrument. (required)
      * @param \CyberSource\Model\UpdatePaymentInstrumentRequest $updatePaymentInstrumentRequest Specify the customer&#39;s payment details. (required)
+     * @param string $clientApplication Client application name (optional)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of \CyberSource\Model\TmsV1InstrumentIdentifiersPaymentInstrumentsGet200ResponseEmbeddedPaymentInstruments, HTTP status code, HTTP response headers (array of strings)
      */
-    public function updatePaymentInstrument($profileId, $tokenId, $updatePaymentInstrumentRequest)
+    public function updatePaymentInstrument($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $updatePaymentInstrumentRequest, $clientApplication = null)
     {
-        list($response, $statusCode, $httpHeader) = $this->updatePaymentInstrumentWithHttpInfo($profileId, $tokenId, $updatePaymentInstrumentRequest);
+        list($response, $statusCode, $httpHeader) = $this->updatePaymentInstrumentWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $updatePaymentInstrumentRequest, $clientApplication);
         return [$response, $statusCode, $httpHeader];
     }
 
@@ -474,12 +627,15 @@ class PaymentInstrumentApi
      * Update a Payment Instrument
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param string $tokenId The TokenId of a Payment Instrument. (required)
      * @param \CyberSource\Model\UpdatePaymentInstrumentRequest $updatePaymentInstrumentRequest Specify the customer&#39;s payment details. (required)
+     * @param string $clientApplication Client application name (optional)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of \CyberSource\Model\TmsV1InstrumentIdentifiersPaymentInstrumentsGet200ResponseEmbeddedPaymentInstruments, HTTP status code, HTTP response headers (array of strings)
      */
-    public function updatePaymentInstrumentWithHttpInfo($profileId, $tokenId, $updatePaymentInstrumentRequest)
+    public function updatePaymentInstrumentWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $updatePaymentInstrumentRequest, $clientApplication = null)
     {
         // verify the required parameter 'profileId' is set
         if ($profileId === null) {
@@ -490,6 +646,28 @@ class PaymentInstrumentApi
         }
         if ((strlen($profileId) < 36)) {
             throw new \InvalidArgumentException('invalid length for "$profileId" when calling PaymentInstrumentApi.updatePaymentInstrument, must be bigger than or equal to 36.');
+        }
+
+        // verify the required parameter 'vCMerchantId' is set
+        if ($vCMerchantId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCMerchantId when calling updatePaymentInstrument');
+        }
+        if ((strlen($vCMerchantId) > 32)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling PaymentInstrumentApi.updatePaymentInstrument, must be smaller than or equal to 32.');
+        }
+        if ((strlen($vCMerchantId) < 5)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling PaymentInstrumentApi.updatePaymentInstrument, must be bigger than or equal to 5.');
+        }
+
+        // verify the required parameter 'vCCorrelationId' is set
+        if ($vCCorrelationId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCCorrelationId when calling updatePaymentInstrument');
+        }
+        if ((strlen($vCCorrelationId) > 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling PaymentInstrumentApi.updatePaymentInstrument, must be smaller than or equal to 36.');
+        }
+        if ((strlen($vCCorrelationId) < 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling PaymentInstrumentApi.updatePaymentInstrument, must be bigger than or equal to 36.');
         }
 
         // verify the required parameter 'tokenId' is set
@@ -507,6 +685,16 @@ class PaymentInstrumentApi
         if ($updatePaymentInstrumentRequest === null) {
             throw new \InvalidArgumentException('Missing the required parameter $updatePaymentInstrumentRequest when calling updatePaymentInstrument');
         }
+        if (!is_null($clientApplication) && (strlen($clientApplication) > 30)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling PaymentInstrumentApi.updatePaymentInstrument, must be smaller than or equal to 30.');
+        }
+        if (!is_null($clientApplication) && (strlen($clientApplication) < 3)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling PaymentInstrumentApi.updatePaymentInstrument, must be bigger than or equal to 3.');
+        }
+        if (!is_null($clientApplication) && !preg_match("/^[a-zA-Z0-9\\\\-_]{3,30}|$/", $clientApplication)) {
+            throw new \InvalidArgumentException("invalid value for \"clientApplication\" when calling PaymentInstrumentApi.updatePaymentInstrument, must conform to the pattern /^[a-zA-Z0-9\\\\-_]{3,30}|$/.");
+        }
+
         // parse inputs
         $resourcePath = "/tms/v1/paymentinstruments/{tokenId}";
         $httpBody = '';
@@ -522,6 +710,18 @@ class PaymentInstrumentApi
         // header params
         if ($profileId !== null) {
             $headerParams['profile-id'] = $this->apiClient->getSerializer()->toHeaderValue($profileId);
+        }
+        // header params
+        if ($vCMerchantId !== null) {
+            $headerParams['v-c-merchant-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCMerchantId);
+        }
+        // header params
+        if ($vCCorrelationId !== null) {
+            $headerParams['v-c-correlation-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCCorrelationId);
+        }
+        // header params
+        if ($clientApplication !== null) {
+            $headerParams['Client-Application'] = $this->apiClient->getSerializer()->toHeaderValue($clientApplication);
         }
         // path params
         if ($tokenId !== null) {

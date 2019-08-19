@@ -209,13 +209,16 @@ class InstrumentIdentifierApi
      * Delete an Instrument Identifier
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param string $tokenId The TokenId of an Instrument Identifier. (required)
+     * @param string $clientApplication Client application name (optional)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of void, HTTP status code, HTTP response headers (array of strings)
      */
-    public function deleteInstrumentIdentifier($profileId, $tokenId)
+    public function deleteInstrumentIdentifier($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $clientApplication = null)
     {
-        list($response, $statusCode, $httpHeader) = $this->deleteInstrumentIdentifierWithHttpInfo($profileId, $tokenId);
+        list($response, $statusCode, $httpHeader) = $this->deleteInstrumentIdentifierWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $clientApplication);
         return [$response, $statusCode, $httpHeader];
     }
 
@@ -225,11 +228,14 @@ class InstrumentIdentifierApi
      * Delete an Instrument Identifier
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param string $tokenId The TokenId of an Instrument Identifier. (required)
+     * @param string $clientApplication Client application name (optional)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of null, HTTP status code, HTTP response headers (array of strings)
      */
-    public function deleteInstrumentIdentifierWithHttpInfo($profileId, $tokenId)
+    public function deleteInstrumentIdentifierWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $clientApplication = null)
     {
         // verify the required parameter 'profileId' is set
         if ($profileId === null) {
@@ -242,6 +248,28 @@ class InstrumentIdentifierApi
             throw new \InvalidArgumentException('invalid length for "$profileId" when calling InstrumentIdentifierApi.deleteInstrumentIdentifier, must be bigger than or equal to 36.');
         }
 
+        // verify the required parameter 'vCMerchantId' is set
+        if ($vCMerchantId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCMerchantId when calling deleteInstrumentIdentifier');
+        }
+        if ((strlen($vCMerchantId) > 32)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling InstrumentIdentifierApi.deleteInstrumentIdentifier, must be smaller than or equal to 32.');
+        }
+        if ((strlen($vCMerchantId) < 5)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling InstrumentIdentifierApi.deleteInstrumentIdentifier, must be bigger than or equal to 5.');
+        }
+
+        // verify the required parameter 'vCCorrelationId' is set
+        if ($vCCorrelationId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCCorrelationId when calling deleteInstrumentIdentifier');
+        }
+        if ((strlen($vCCorrelationId) > 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling InstrumentIdentifierApi.deleteInstrumentIdentifier, must be smaller than or equal to 36.');
+        }
+        if ((strlen($vCCorrelationId) < 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling InstrumentIdentifierApi.deleteInstrumentIdentifier, must be bigger than or equal to 36.');
+        }
+
         // verify the required parameter 'tokenId' is set
         if ($tokenId === null) {
             throw new \InvalidArgumentException('Missing the required parameter $tokenId when calling deleteInstrumentIdentifier');
@@ -251,6 +279,16 @@ class InstrumentIdentifierApi
         }
         if ((strlen($tokenId) < 16)) {
             throw new \InvalidArgumentException('invalid length for "$tokenId" when calling InstrumentIdentifierApi.deleteInstrumentIdentifier, must be bigger than or equal to 16.');
+        }
+
+        if (!is_null($clientApplication) && (strlen($clientApplication) > 30)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling InstrumentIdentifierApi.deleteInstrumentIdentifier, must be smaller than or equal to 30.');
+        }
+        if (!is_null($clientApplication) && (strlen($clientApplication) < 3)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling InstrumentIdentifierApi.deleteInstrumentIdentifier, must be bigger than or equal to 3.');
+        }
+        if (!is_null($clientApplication) && !preg_match("/^[a-zA-Z0-9\\\\-_]{3,30}|$/", $clientApplication)) {
+            throw new \InvalidArgumentException("invalid value for \"clientApplication\" when calling InstrumentIdentifierApi.deleteInstrumentIdentifier, must conform to the pattern /^[a-zA-Z0-9\\\\-_]{3,30}|$/.");
         }
 
         // parse inputs
@@ -268,6 +306,18 @@ class InstrumentIdentifierApi
         // header params
         if ($profileId !== null) {
             $headerParams['profile-id'] = $this->apiClient->getSerializer()->toHeaderValue($profileId);
+        }
+        // header params
+        if ($vCMerchantId !== null) {
+            $headerParams['v-c-merchant-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCMerchantId);
+        }
+        // header params
+        if ($vCCorrelationId !== null) {
+            $headerParams['v-c-correlation-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCCorrelationId);
+        }
+        // header params
+        if ($clientApplication !== null) {
+            $headerParams['Client-Application'] = $this->apiClient->getSerializer()->toHeaderValue($clientApplication);
         }
         // path params
         if ($tokenId !== null) {
@@ -332,34 +382,40 @@ class InstrumentIdentifierApi
     /**
      * Operation getAllPaymentInstruments
      *
-     * Retrieve all Payment Instruments
+     * Retrieve all Payment Instruments associated with an Instrument Identifier
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param string $tokenId The TokenId of an Instrument Identifier. (required)
+     * @param string $clientApplication Client application name (optional)
      * @param int $offset Starting Payment Instrument record in zero-based dataset that should be returned as the first object in the array. Default is 0. (optional, default to 0)
      * @param int $limit The maximum number of Payment Instruments that can be returned in the array starting from the offset record in zero-based dataset. Default is 20, maximum is 100. (optional, default to 20)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of \CyberSource\Model\TmsV1InstrumentIdentifiersPaymentInstrumentsGet200Response, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getAllPaymentInstruments($profileId, $tokenId, $offset = '0', $limit = '20')
+    public function getAllPaymentInstruments($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $clientApplication = null, $offset = '0', $limit = '20')
     {
-        list($response, $statusCode, $httpHeader) = $this->getAllPaymentInstrumentsWithHttpInfo($profileId, $tokenId, $offset, $limit);
+        list($response, $statusCode, $httpHeader) = $this->getAllPaymentInstrumentsWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $clientApplication, $offset, $limit);
         return [$response, $statusCode, $httpHeader];
     }
 
     /**
      * Operation getAllPaymentInstrumentsWithHttpInfo
      *
-     * Retrieve all Payment Instruments
+     * Retrieve all Payment Instruments associated with an Instrument Identifier
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param string $tokenId The TokenId of an Instrument Identifier. (required)
+     * @param string $clientApplication Client application name (optional)
      * @param int $offset Starting Payment Instrument record in zero-based dataset that should be returned as the first object in the array. Default is 0. (optional, default to 0)
      * @param int $limit The maximum number of Payment Instruments that can be returned in the array starting from the offset record in zero-based dataset. Default is 20, maximum is 100. (optional, default to 20)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of \CyberSource\Model\TmsV1InstrumentIdentifiersPaymentInstrumentsGet200Response, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getAllPaymentInstrumentsWithHttpInfo($profileId, $tokenId, $offset = '0', $limit = '20')
+    public function getAllPaymentInstrumentsWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $clientApplication = null, $offset = '0', $limit = '20')
     {
         // verify the required parameter 'profileId' is set
         if ($profileId === null) {
@@ -372,6 +428,28 @@ class InstrumentIdentifierApi
             throw new \InvalidArgumentException('invalid length for "$profileId" when calling InstrumentIdentifierApi.getAllPaymentInstruments, must be bigger than or equal to 36.');
         }
 
+        // verify the required parameter 'vCMerchantId' is set
+        if ($vCMerchantId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCMerchantId when calling getAllPaymentInstruments');
+        }
+        if ((strlen($vCMerchantId) > 32)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling InstrumentIdentifierApi.getAllPaymentInstruments, must be smaller than or equal to 32.');
+        }
+        if ((strlen($vCMerchantId) < 5)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling InstrumentIdentifierApi.getAllPaymentInstruments, must be bigger than or equal to 5.');
+        }
+
+        // verify the required parameter 'vCCorrelationId' is set
+        if ($vCCorrelationId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCCorrelationId when calling getAllPaymentInstruments');
+        }
+        if ((strlen($vCCorrelationId) > 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling InstrumentIdentifierApi.getAllPaymentInstruments, must be smaller than or equal to 36.');
+        }
+        if ((strlen($vCCorrelationId) < 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling InstrumentIdentifierApi.getAllPaymentInstruments, must be bigger than or equal to 36.');
+        }
+
         // verify the required parameter 'tokenId' is set
         if ($tokenId === null) {
             throw new \InvalidArgumentException('Missing the required parameter $tokenId when calling getAllPaymentInstruments');
@@ -381,6 +459,16 @@ class InstrumentIdentifierApi
         }
         if ((strlen($tokenId) < 16)) {
             throw new \InvalidArgumentException('invalid length for "$tokenId" when calling InstrumentIdentifierApi.getAllPaymentInstruments, must be bigger than or equal to 16.');
+        }
+
+        if (!is_null($clientApplication) && (strlen($clientApplication) > 30)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling InstrumentIdentifierApi.getAllPaymentInstruments, must be smaller than or equal to 30.');
+        }
+        if (!is_null($clientApplication) && (strlen($clientApplication) < 3)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling InstrumentIdentifierApi.getAllPaymentInstruments, must be bigger than or equal to 3.');
+        }
+        if (!is_null($clientApplication) && !preg_match("/^[a-zA-Z0-9\\\\-_]{3,30}|$/", $clientApplication)) {
+            throw new \InvalidArgumentException("invalid value for \"clientApplication\" when calling InstrumentIdentifierApi.getAllPaymentInstruments, must conform to the pattern /^[a-zA-Z0-9\\\\-_]{3,30}|$/.");
         }
 
         if (!is_null($offset) && ($offset < 0)) {
@@ -417,6 +505,18 @@ class InstrumentIdentifierApi
         // header params
         if ($profileId !== null) {
             $headerParams['profile-id'] = $this->apiClient->getSerializer()->toHeaderValue($profileId);
+        }
+        // header params
+        if ($vCMerchantId !== null) {
+            $headerParams['v-c-merchant-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCMerchantId);
+        }
+        // header params
+        if ($vCCorrelationId !== null) {
+            $headerParams['v-c-correlation-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCCorrelationId);
+        }
+        // header params
+        if ($clientApplication !== null) {
+            $headerParams['Client-Application'] = $this->apiClient->getSerializer()->toHeaderValue($clientApplication);
         }
         // path params
         if ($tokenId !== null) {
@@ -488,13 +588,16 @@ class InstrumentIdentifierApi
      * Retrieve an Instrument Identifier
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param string $tokenId The TokenId of an Instrument Identifier. (required)
+     * @param string $clientApplication Client application name (optional)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of \CyberSource\Model\TmsV1InstrumentIdentifiersPost200Response, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getInstrumentIdentifier($profileId, $tokenId)
+    public function getInstrumentIdentifier($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $clientApplication = null)
     {
-        list($response, $statusCode, $httpHeader) = $this->getInstrumentIdentifierWithHttpInfo($profileId, $tokenId);
+        list($response, $statusCode, $httpHeader) = $this->getInstrumentIdentifierWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $clientApplication);
         return [$response, $statusCode, $httpHeader];
     }
 
@@ -504,11 +607,14 @@ class InstrumentIdentifierApi
      * Retrieve an Instrument Identifier
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param string $tokenId The TokenId of an Instrument Identifier. (required)
+     * @param string $clientApplication Client application name (optional)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of \CyberSource\Model\TmsV1InstrumentIdentifiersPost200Response, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getInstrumentIdentifierWithHttpInfo($profileId, $tokenId)
+    public function getInstrumentIdentifierWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $clientApplication = null)
     {
         // verify the required parameter 'profileId' is set
         if ($profileId === null) {
@@ -521,6 +627,28 @@ class InstrumentIdentifierApi
             throw new \InvalidArgumentException('invalid length for "$profileId" when calling InstrumentIdentifierApi.getInstrumentIdentifier, must be bigger than or equal to 36.');
         }
 
+        // verify the required parameter 'vCMerchantId' is set
+        if ($vCMerchantId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCMerchantId when calling getInstrumentIdentifier');
+        }
+        if ((strlen($vCMerchantId) > 32)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling InstrumentIdentifierApi.getInstrumentIdentifier, must be smaller than or equal to 32.');
+        }
+        if ((strlen($vCMerchantId) < 5)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling InstrumentIdentifierApi.getInstrumentIdentifier, must be bigger than or equal to 5.');
+        }
+
+        // verify the required parameter 'vCCorrelationId' is set
+        if ($vCCorrelationId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCCorrelationId when calling getInstrumentIdentifier');
+        }
+        if ((strlen($vCCorrelationId) > 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling InstrumentIdentifierApi.getInstrumentIdentifier, must be smaller than or equal to 36.');
+        }
+        if ((strlen($vCCorrelationId) < 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling InstrumentIdentifierApi.getInstrumentIdentifier, must be bigger than or equal to 36.');
+        }
+
         // verify the required parameter 'tokenId' is set
         if ($tokenId === null) {
             throw new \InvalidArgumentException('Missing the required parameter $tokenId when calling getInstrumentIdentifier');
@@ -530,6 +658,16 @@ class InstrumentIdentifierApi
         }
         if ((strlen($tokenId) < 16)) {
             throw new \InvalidArgumentException('invalid length for "$tokenId" when calling InstrumentIdentifierApi.getInstrumentIdentifier, must be bigger than or equal to 16.');
+        }
+
+        if (!is_null($clientApplication) && (strlen($clientApplication) > 30)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling InstrumentIdentifierApi.getInstrumentIdentifier, must be smaller than or equal to 30.');
+        }
+        if (!is_null($clientApplication) && (strlen($clientApplication) < 3)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling InstrumentIdentifierApi.getInstrumentIdentifier, must be bigger than or equal to 3.');
+        }
+        if (!is_null($clientApplication) && !preg_match("/^[a-zA-Z0-9\\\\-_]{3,30}|$/", $clientApplication)) {
+            throw new \InvalidArgumentException("invalid value for \"clientApplication\" when calling InstrumentIdentifierApi.getInstrumentIdentifier, must conform to the pattern /^[a-zA-Z0-9\\\\-_]{3,30}|$/.");
         }
 
         // parse inputs
@@ -547,6 +685,18 @@ class InstrumentIdentifierApi
         // header params
         if ($profileId !== null) {
             $headerParams['profile-id'] = $this->apiClient->getSerializer()->toHeaderValue($profileId);
+        }
+        // header params
+        if ($vCMerchantId !== null) {
+            $headerParams['v-c-merchant-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCMerchantId);
+        }
+        // header params
+        if ($vCCorrelationId !== null) {
+            $headerParams['v-c-correlation-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCCorrelationId);
+        }
+        // header params
+        if ($clientApplication !== null) {
+            $headerParams['Client-Application'] = $this->apiClient->getSerializer()->toHeaderValue($clientApplication);
         }
         // path params
         if ($tokenId !== null) {
@@ -618,14 +768,17 @@ class InstrumentIdentifierApi
      * Update a Instrument Identifier
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param string $tokenId The TokenId of an Instrument Identifier. (required)
      * @param \CyberSource\Model\UpdateInstrumentIdentifierRequest $updateInstrumentIdentifierRequest Specify the previous transaction ID to update. (required)
+     * @param string $clientApplication Client application name (optional)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of \CyberSource\Model\TmsV1InstrumentIdentifiersPost200Response, HTTP status code, HTTP response headers (array of strings)
      */
-    public function updateInstrumentIdentifier($profileId, $tokenId, $updateInstrumentIdentifierRequest)
+    public function updateInstrumentIdentifier($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $updateInstrumentIdentifierRequest, $clientApplication = null)
     {
-        list($response, $statusCode, $httpHeader) = $this->updateInstrumentIdentifierWithHttpInfo($profileId, $tokenId, $updateInstrumentIdentifierRequest);
+        list($response, $statusCode, $httpHeader) = $this->updateInstrumentIdentifierWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $updateInstrumentIdentifierRequest, $clientApplication);
         return [$response, $statusCode, $httpHeader];
     }
 
@@ -635,12 +788,15 @@ class InstrumentIdentifierApi
      * Update a Instrument Identifier
      *
      * @param string $profileId The id of a profile containing user specific TMS configuration. (required)
+     * @param string $vCMerchantId CyberSource merchant id. (required)
+     * @param string $vCCorrelationId The mandatory correlation id passed by upstream (calling) system. (required)
      * @param string $tokenId The TokenId of an Instrument Identifier. (required)
      * @param \CyberSource\Model\UpdateInstrumentIdentifierRequest $updateInstrumentIdentifierRequest Specify the previous transaction ID to update. (required)
+     * @param string $clientApplication Client application name (optional)
      * @throws \CyberSource\ApiException on non-2xx response
      * @return array of \CyberSource\Model\TmsV1InstrumentIdentifiersPost200Response, HTTP status code, HTTP response headers (array of strings)
      */
-    public function updateInstrumentIdentifierWithHttpInfo($profileId, $tokenId, $updateInstrumentIdentifierRequest)
+    public function updateInstrumentIdentifierWithHttpInfo($profileId, $vCMerchantId, $vCCorrelationId, $tokenId, $updateInstrumentIdentifierRequest, $clientApplication = null)
     {
         // verify the required parameter 'profileId' is set
         if ($profileId === null) {
@@ -651,6 +807,28 @@ class InstrumentIdentifierApi
         }
         if ((strlen($profileId) < 36)) {
             throw new \InvalidArgumentException('invalid length for "$profileId" when calling InstrumentIdentifierApi.updateInstrumentIdentifier, must be bigger than or equal to 36.');
+        }
+
+        // verify the required parameter 'vCMerchantId' is set
+        if ($vCMerchantId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCMerchantId when calling updateInstrumentIdentifier');
+        }
+        if ((strlen($vCMerchantId) > 32)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling InstrumentIdentifierApi.updateInstrumentIdentifier, must be smaller than or equal to 32.');
+        }
+        if ((strlen($vCMerchantId) < 5)) {
+            throw new \InvalidArgumentException('invalid length for "$vCMerchantId" when calling InstrumentIdentifierApi.updateInstrumentIdentifier, must be bigger than or equal to 5.');
+        }
+
+        // verify the required parameter 'vCCorrelationId' is set
+        if ($vCCorrelationId === null) {
+            throw new \InvalidArgumentException('Missing the required parameter $vCCorrelationId when calling updateInstrumentIdentifier');
+        }
+        if ((strlen($vCCorrelationId) > 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling InstrumentIdentifierApi.updateInstrumentIdentifier, must be smaller than or equal to 36.');
+        }
+        if ((strlen($vCCorrelationId) < 36)) {
+            throw new \InvalidArgumentException('invalid length for "$vCCorrelationId" when calling InstrumentIdentifierApi.updateInstrumentIdentifier, must be bigger than or equal to 36.');
         }
 
         // verify the required parameter 'tokenId' is set
@@ -668,6 +846,16 @@ class InstrumentIdentifierApi
         if ($updateInstrumentIdentifierRequest === null) {
             throw new \InvalidArgumentException('Missing the required parameter $updateInstrumentIdentifierRequest when calling updateInstrumentIdentifier');
         }
+        if (!is_null($clientApplication) && (strlen($clientApplication) > 30)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling InstrumentIdentifierApi.updateInstrumentIdentifier, must be smaller than or equal to 30.');
+        }
+        if (!is_null($clientApplication) && (strlen($clientApplication) < 3)) {
+            throw new \InvalidArgumentException('invalid length for "$clientApplication" when calling InstrumentIdentifierApi.updateInstrumentIdentifier, must be bigger than or equal to 3.');
+        }
+        if (!is_null($clientApplication) && !preg_match("/^[a-zA-Z0-9\\\\-_]{3,30}|$/", $clientApplication)) {
+            throw new \InvalidArgumentException("invalid value for \"clientApplication\" when calling InstrumentIdentifierApi.updateInstrumentIdentifier, must conform to the pattern /^[a-zA-Z0-9\\\\-_]{3,30}|$/.");
+        }
+
         // parse inputs
         $resourcePath = "/tms/v1/instrumentidentifiers/{tokenId}";
         $httpBody = '';
@@ -683,6 +871,18 @@ class InstrumentIdentifierApi
         // header params
         if ($profileId !== null) {
             $headerParams['profile-id'] = $this->apiClient->getSerializer()->toHeaderValue($profileId);
+        }
+        // header params
+        if ($vCMerchantId !== null) {
+            $headerParams['v-c-merchant-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCMerchantId);
+        }
+        // header params
+        if ($vCCorrelationId !== null) {
+            $headerParams['v-c-correlation-id'] = $this->apiClient->getSerializer()->toHeaderValue($vCCorrelationId);
+        }
+        // header params
+        if ($clientApplication !== null) {
+            $headerParams['Client-Application'] = $this->apiClient->getSerializer()->toHeaderValue($clientApplication);
         }
         // path params
         if ($tokenId !== null) {

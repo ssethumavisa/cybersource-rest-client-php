@@ -59,7 +59,7 @@ class TmsV1InstrumentIdentifiersPaymentInstrumentsGet200ResponseEmbeddedInstrume
         'state' => 'string',
         'id' => 'string',
         'card' => '\CyberSource\Model\TmsV1InstrumentIdentifiersPost200ResponseCard',
-        'bankAccount' => '\CyberSource\Model\TmsV1InstrumentIdentifiersPost200ResponseBankAccount',
+        'bankAccount' => '\CyberSource\Model\Tmsv1instrumentidentifiersBankAccount',
         'processingInformation' => '\CyberSource\Model\TmsV1InstrumentIdentifiersPost200ResponseProcessingInformation',
         'metadata' => '\CyberSource\Model\TmsV1InstrumentIdentifiersPost200ResponseMetadata'
     ];
@@ -151,34 +151,8 @@ class TmsV1InstrumentIdentifiersPaymentInstrumentsGet200ResponseEmbeddedInstrume
         return self::$getters;
     }
 
-    const OBJECT_INSTRUMENT_IDENTIFIER = 'instrumentIdentifier';
-    const STATE_ACTIVE = 'ACTIVE';
-    const STATE_CLOSED = 'CLOSED';
     
 
-    
-    /**
-     * Gets allowable values of the enum
-     * @return string[]
-     */
-    public function getObjectAllowableValues()
-    {
-        return [
-            self::OBJECT_INSTRUMENT_IDENTIFIER,
-        ];
-    }
-    
-    /**
-     * Gets allowable values of the enum
-     * @return string[]
-     */
-    public function getStateAllowableValues()
-    {
-        return [
-            self::STATE_ACTIVE,
-            self::STATE_CLOSED,
-        ];
-    }
     
 
     /**
@@ -212,22 +186,6 @@ class TmsV1InstrumentIdentifiersPaymentInstrumentsGet200ResponseEmbeddedInstrume
     {
         $invalid_properties = [];
 
-        $allowed_values = $this->getObjectAllowableValues();
-        if (!in_array($this->container['object'], $allowed_values)) {
-            $invalid_properties[] = sprintf(
-                "invalid value for 'object', must be one of '%s'",
-                implode("', '", $allowed_values)
-            );
-        }
-
-        $allowed_values = $this->getStateAllowableValues();
-        if (!in_array($this->container['state'], $allowed_values)) {
-            $invalid_properties[] = sprintf(
-                "invalid value for 'state', must be one of '%s'",
-                implode("', '", $allowed_values)
-            );
-        }
-
         if (!is_null($this->container['id']) && (strlen($this->container['id']) > 32)) {
             $invalid_properties[] = "invalid value for 'id', the character length must be smaller than or equal to 32.";
         }
@@ -248,14 +206,6 @@ class TmsV1InstrumentIdentifiersPaymentInstrumentsGet200ResponseEmbeddedInstrume
     public function valid()
     {
 
-        $allowed_values = $this->getObjectAllowableValues();
-        if (!in_array($this->container['object'], $allowed_values)) {
-            return false;
-        }
-        $allowed_values = $this->getStateAllowableValues();
-        if (!in_array($this->container['state'], $allowed_values)) {
-            return false;
-        }
         if (strlen($this->container['id']) > 32) {
             return false;
         }
@@ -298,20 +248,11 @@ class TmsV1InstrumentIdentifiersPaymentInstrumentsGet200ResponseEmbeddedInstrume
 
     /**
      * Sets object
-     * @param string $object Describes type of token.
+     * @param string $object 'Describes type of token.'  Valid values: - instrumentIdentifier
      * @return $this
      */
     public function setObject($object)
     {
-        $allowed_values = $this->getObjectAllowableValues();
-        if (!is_null($object) && !in_array($object, $allowed_values)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value for 'object', must be one of '%s'",
-                    implode("', '", $allowed_values)
-                )
-            );
-        }
         $this->container['object'] = $object;
 
         return $this;
@@ -328,20 +269,11 @@ class TmsV1InstrumentIdentifiersPaymentInstrumentsGet200ResponseEmbeddedInstrume
 
     /**
      * Sets state
-     * @param string $state Current state of the token.
+     * @param string $state 'Current state of the token.'  Valid values: - ACTIVE - CLOSED
      * @return $this
      */
     public function setState($state)
     {
-        $allowed_values = $this->getStateAllowableValues();
-        if (!is_null($state) && !in_array($state, $allowed_values)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value for 'state', must be one of '%s'",
-                    implode("', '", $allowed_values)
-                )
-            );
-        }
         $this->container['state'] = $state;
 
         return $this;
@@ -398,7 +330,7 @@ class TmsV1InstrumentIdentifiersPaymentInstrumentsGet200ResponseEmbeddedInstrume
 
     /**
      * Gets bankAccount
-     * @return \CyberSource\Model\TmsV1InstrumentIdentifiersPost200ResponseBankAccount
+     * @return \CyberSource\Model\Tmsv1instrumentidentifiersBankAccount
      */
     public function getBankAccount()
     {
@@ -407,7 +339,7 @@ class TmsV1InstrumentIdentifiersPaymentInstrumentsGet200ResponseEmbeddedInstrume
 
     /**
      * Sets bankAccount
-     * @param \CyberSource\Model\TmsV1InstrumentIdentifiersPost200ResponseBankAccount $bankAccount
+     * @param \CyberSource\Model\Tmsv1instrumentidentifiersBankAccount $bankAccount
      * @return $this
      */
     public function setBankAccount($bankAccount)

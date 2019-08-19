@@ -171,30 +171,8 @@ class Ptsv2paymentsProcessingInformationAuthorizationOptions implements ArrayAcc
         return self::$getters;
     }
 
-    const DECLINE_AVS_FLAGS_D = 'D';
-    const DECLINE_AVS_FLAGS_A = 'A';
-    const DECLINE_AVS_FLAGS_V = 'V';
-    const DECLINE_AVS_FLAGS_S = 'S';
-    const DECLINE_AVS_FLAGS_N = 'N';
-    const DECLINE_AVS_FLAGS_O = 'O';
     
 
-    
-    /**
-     * Gets allowable values of the enum
-     * @return string[]
-     */
-    public function getDeclineAvsFlagsAllowableValues()
-    {
-        return [
-            self::DECLINE_AVS_FLAGS_D,
-            self::DECLINE_AVS_FLAGS_A,
-            self::DECLINE_AVS_FLAGS_V,
-            self::DECLINE_AVS_FLAGS_S,
-            self::DECLINE_AVS_FLAGS_N,
-            self::DECLINE_AVS_FLAGS_O,
-        ];
-    }
     
 
     /**
@@ -362,7 +340,7 @@ class Ptsv2paymentsProcessingInformationAuthorizationOptions implements ArrayAcc
 
     /**
      * Sets authIndicator
-     * @param string $authIndicator Flag that specifies the purpose of the authorization.  Possible values:  - **0**: Preauthorization  - **1**: Final authorization  To set the default for this field, contact CyberSource Customer Support. For details, see \"Final Authorization Indicator\" in the [Credit Card Services Using the SCMP API Guide](https://apps.cybersource.com/library/documentation/dev_guides/CC_Svcs_SCMP_API/html/wwhelp/wwhimpl/js/html/wwhelp.htm).  Barclays and Elavon The default for Barclays and Elavon is 1 (final authorization). To change the default for this field, contact CyberSource Customer Support.  CyberSource through VisaNet When the value for this field is 0, it corresponds to the following data in the TC 33 capture file5:  - Record: CP01 TCR0  - Position: 164  - Field: Additional Authorization Indicators When the value for this field is 1, it does not correspond to any data in the TC 33 capture file.  For processor-specific information, see the `auth_indicator` field in [Credit Card Services Using the SCMP API](http://apps.cybersource.com/library/documentation/dev_guides/CC_Svcs_SCMP_API/html).
+     * @param string $authIndicator Flag that specifies the purpose of the authorization.  Possible values:  - **0**: Preauthorization  - **1**: Final authorization  To set the default for this field, contact CyberSource Customer Support. For details, see \"Final Authorization Indicator\" in the [Credit Card Services Using the SCMP API Guide](https://apps.cybersource.com/library/documentation/dev_guides/CC_Svcs_SCMP_API/html/wwhelp/wwhimpl/js/html/wwhelp.htm).  #### Barclays and Elavon The default for Barclays and Elavon is 1 (final authorization). To change the default for this field, contact CyberSource Customer Support.  #### CyberSource through VisaNet When the value for this field is 0, it corresponds to the following data in the TC 33 capture file5:  - Record: CP01 TCR0  - Position: 164  - Field: Additional Authorization Indicators When the value for this field is 1, it does not correspond to any data in the TC 33 capture file.  For processor-specific information, see the `auth_indicator` field in [Credit Card Services Using the SCMP API](http://apps.cybersource.com/library/documentation/dev_guides/CC_Svcs_SCMP_API/html).
      * @return $this
      */
     public function setAuthIndicator($authIndicator)
@@ -387,7 +365,7 @@ class Ptsv2paymentsProcessingInformationAuthorizationOptions implements ArrayAcc
 
     /**
      * Sets partialAuthIndicator
-     * @param bool $partialAuthIndicator Flag that indicates whether the transaction is enabled for partial authorization or not. When your request includes this field, this value overrides the information in your CyberSource account.  For processor-specific information, see the `auth_partial_auth_indicator` field in [Credit Card Services Using the SCMP API.](http://apps.cybersource.com/library/documentation/dev_guides/CC_Svcs_SCMP_API/html)  **CyberSource through VisaNet**\\ To set the default for this field, contact CyberSource Customer Support. The value for this field corresponds to the following data in the TC 33 capture file5: - Record: CP01 TCR0 - Position: 164 - Field: Additional Authorization Indicators  Possible values: - **true** Enable the transaction for partial authorization. - **false** Do not enable the transaction for partial authorization.
+     * @param bool $partialAuthIndicator Flag that indicates whether the transaction is enabled for partial authorization or not. When your request includes this field, this value overrides the information in your CyberSource account.  For processor-specific information, see the `auth_partial_auth_indicator` field in [Credit Card Services Using the SCMP API.](http://apps.cybersource.com/library/documentation/dev_guides/CC_Svcs_SCMP_API/html)  #### CyberSource through VisaNet To set the default for this field, contact CyberSource Customer Support. The value for this field corresponds to the following data in the TC 33 capture file5: - Record: CP01 TCR0 - Position: 164 - Field: Additional Authorization Indicators  Possible values: - **true** Enable the transaction for partial authorization. - **false** Do not enable the transaction for partial authorization.
      * @return $this
      */
     public function setPartialAuthIndicator($partialAuthIndicator)
@@ -455,15 +433,6 @@ class Ptsv2paymentsProcessingInformationAuthorizationOptions implements ArrayAcc
      */
     public function setDeclineAvsFlags($declineAvsFlags)
     {
-        $allowed_values = $this->getDeclineAvsFlagsAllowableValues();
-        if (!is_null($declineAvsFlags) && array_diff($declineAvsFlags, $allowed_values)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value for 'declineAvsFlags', must be one of '%s'",
-                    implode("', '", $allowed_values)
-                )
-            );
-        }
         $this->container['declineAvsFlags'] = $declineAvsFlags;
 
         return $this;

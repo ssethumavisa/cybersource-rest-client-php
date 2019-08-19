@@ -126,30 +126,8 @@ class Ptsv2paymentsBuyerInformationPersonalIdentification implements ArrayAccess
         return self::$getters;
     }
 
-    const TYPE_NATIONAL = 'NATIONAL';
-    const TYPE_CPF = 'CPF';
-    const TYPE_CPNJ = 'CPNJ';
-    const TYPE_CURP = 'CURP';
-    const TYPE_SSN = 'SSN';
-    const TYPE_DRIVER_LICENSE = 'DRIVER_LICENSE';
     
 
-    
-    /**
-     * Gets allowable values of the enum
-     * @return string[]
-     */
-    public function getTypeAllowableValues()
-    {
-        return [
-            self::TYPE_NATIONAL,
-            self::TYPE_CPF,
-            self::TYPE_CPNJ,
-            self::TYPE_CURP,
-            self::TYPE_SSN,
-            self::TYPE_DRIVER_LICENSE,
-        ];
-    }
     
 
     /**
@@ -178,14 +156,6 @@ class Ptsv2paymentsBuyerInformationPersonalIdentification implements ArrayAccess
     {
         $invalid_properties = [];
 
-        $allowed_values = $this->getTypeAllowableValues();
-        if (!in_array($this->container['type'], $allowed_values)) {
-            $invalid_properties[] = sprintf(
-                "invalid value for 'type', must be one of '%s'",
-                implode("', '", $allowed_values)
-            );
-        }
-
         if (!is_null($this->container['id']) && (strlen($this->container['id']) > 26)) {
             $invalid_properties[] = "invalid value for 'id', the character length must be smaller than or equal to 26.";
         }
@@ -202,10 +172,6 @@ class Ptsv2paymentsBuyerInformationPersonalIdentification implements ArrayAccess
     public function valid()
     {
 
-        $allowed_values = $this->getTypeAllowableValues();
-        if (!in_array($this->container['type'], $allowed_values)) {
-            return false;
-        }
         if (strlen($this->container['id']) > 26) {
             return false;
         }
@@ -224,20 +190,11 @@ class Ptsv2paymentsBuyerInformationPersonalIdentification implements ArrayAccess
 
     /**
      * Sets type
-     * @param string $type The type of the identification.  Possible values:   - `NATIONAL`   - `CPF`   - `CPNJ`   - `CURP`   - `SSN`   - `DRIVER_LICENSE`  This field is supported only on the following processors.  #### ComercioLatino Set this field to the Cadastro de Pessoas Fisicas (CPF).  #### CyberSource Latin American Processing Supported for Redecard in Brazil. Set this field to the Cadastro de Pessoas Fisicas (CPF), which is required for AVS for Redecard in Brazil. **Note** CyberSource Latin American Processing is the name of a specific processing connection that CyberSource supports. In the CyberSource API documentation, CyberSource Latin American Processing does not refer to the general topic of processing in Latin America. The information in this field description is for the specific processing connection called CyberSource Latin American Processing. It is not for any other Latin American processors that CyberSource supports.
+     * @param string $type The type of the identification.  Possible values:   - `NATIONAL`   - `CPF`   - `CPNJ`   - `CURP`   - `SSN`   - `DRIVER_LICENSE`  This field is supported only on the following processors.  #### ComercioLatino Set this field to the Cadastro de Pessoas Fisicas (CPF).  #### CyberSource Latin American Processing Supported for Redecard in Brazil. Set this field to the Cadastro de Pessoas Fisicas (CPF), which is required for AVS for Redecard in Brazil. **Note** CyberSource Latin American Processing is the name of a specific processing connection that CyberSource supports. In the CyberSource API documentation, CyberSource Latin American Processing does not refer to the general topic of processing in Latin America. The information in this field description is for the specific processing connection called CyberSource Latin American Processing. It is not for any other Latin American processors that CyberSource supports.  For processor-specific information, see the `personal_id` field in [Credit Card Services Using the SCMP API.](http://apps.cybersource.com/library/documentation/dev_guides/CC_Svcs_SCMP_API/html)
      * @return $this
      */
     public function setType($type)
     {
-        $allowed_values = $this->getTypeAllowableValues();
-        if (!is_null($type) && !in_array($type, $allowed_values)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value for 'type', must be one of '%s'",
-                    implode("', '", $allowed_values)
-                )
-            );
-        }
         $this->container['type'] = $type;
 
         return $this;

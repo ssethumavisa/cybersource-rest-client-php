@@ -338,7 +338,7 @@ class TssV2TransactionsGet200ResponseProcessorInformation implements ArrayAccess
 
     /**
      * Sets responseId
-     * @param string $responseId The description for this field is not available.
+     * @param string $responseId Response ID sent from the processor.
      * @return $this
      */
     public function setResponseId($responseId)

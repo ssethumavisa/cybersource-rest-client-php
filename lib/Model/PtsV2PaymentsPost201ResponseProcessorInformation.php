@@ -665,7 +665,7 @@ class PtsV2PaymentsPost201ResponseProcessorInformation implements ArrayAccess
 
     /**
      * Sets forwardedAcquirerCode
-     * @param string $forwardedAcquirerCode Name of the Japanese acquirer that processed the transaction. Returned only for CCS (CAFIS) and JCN Gateway. Please contact the CyberSource Japan Support Group for more information.
+     * @param string $forwardedAcquirerCode Name of the Japanese acquirer that processed the transaction. Returned only for JCN Gateway. Please contact the CyberSource Japan Support Group for more information.
      * @return $this
      */
     public function setForwardedAcquirerCode($forwardedAcquirerCode)
